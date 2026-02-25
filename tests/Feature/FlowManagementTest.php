@@ -85,6 +85,25 @@ test('it requires product and trigger when status is live', function () {
     $response->assertSessionHasErrors(['product_id', 'trigger']);
 });
 
+test('it defaults status to draft when omitted', function () {
+    $product = Product::factory()->create();
+
+    $payload = baseFlowPayload([
+        'product_id' => $product->id,
+        'trigger' => 'purchased',
+    ]);
+
+    unset($payload['status']);
+
+    $response = $this->post(route('flow.store'), $payload);
+    $response->assertStatus(302);
+
+    $this->assertDatabaseHas('flows', [
+        'name' => 'Welcome Flow',
+        'status' => 'draft',
+    ]);
+});
+
 test('flow test command handles flows with nullable product', function () {
     Flow::query()->create(baseFlowPayload([
         'status' => 'live',
