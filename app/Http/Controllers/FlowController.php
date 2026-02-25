@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Flow;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,10 +11,10 @@ class FlowController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id' => 'nullable|exists:flows,id',
+            'id' => 'nullable|integer|exists:flows,id',
             'name' => 'nullable|string|max:255',
-            'product_id' => 'nullable|exists:products,id',
-            'trigger' => 'nullable|string|in:purchased,abandoned',
+            'product_id' => 'nullable|exists:products,id|required_if:status,live',
+            'trigger' => 'nullable|string|in:purchased,abandoned|required_if:status,live',
             'nodes' => 'required|array',
             'edges' => 'present|array',
             'status' => 'nullable|in:draft,live',
